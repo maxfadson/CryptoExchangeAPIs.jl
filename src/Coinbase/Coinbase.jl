@@ -87,6 +87,10 @@ function CryptoExchangeAPIs.request_body(::Q)::String where {Q<:CoinbaseCommonQu
     return ""
 end
 
+function Serde.SerQuery.ser_ignore_field(::Type{<:CoinbaseCommonQuery}, ::Val{x}) where {x}
+    return startswith(string(x), "q_")
+end
+
 function CryptoExchangeAPIs.request_query(query::Q)::String where {Q<:CoinbaseCommonQuery}
     return Serde.to_query(query)
 end

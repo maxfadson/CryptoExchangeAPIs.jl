@@ -1,6 +1,6 @@
 module Product
 
-export ProductQuery,
+export ProductParams,
     ProductData,
     product
 
@@ -10,8 +10,8 @@ using Dates, NanoDates, TimeZones
 using CryptoExchangeAPIs.Coinbase
 using CryptoExchangeAPIs: Maybe, APIsRequest
 
-Base.@kwdef struct ProductQuery <: CoinbasePublicQuery
-    type::Maybe{String} = nothing
+Base.@kwdef struct ProductParams <: CoinbasePublicQuery
+    q_type::Maybe{String} = nothing
 end
 struct ProductData <: CoinbaseData
     id::String
@@ -39,7 +39,7 @@ function Serde.isempty(::Type{<:ProductData}, x)::Bool
 end
 
 """
-    product(client::CoinbaseClient, query::ProductQuery)
+    product(client::CoinbaseClient, query::ProductParams)
     product(client::CoinbaseClient = Coinbase.Spot.public_client; kw...)
 
 Gets a list of available currency pairs for trading.
@@ -93,12 +93,12 @@ to_pretty_json(result.result)
 ]
 ```
 """
-function product(client::CoinbaseClient, query::ProductQuery)
+function product(client::CoinbaseClient, query::ProductParams)
     return APIsRequest{Vector{ProductData}}("GET", "products", query)(client)
 end
 
 function product(client::CoinbaseClient = Coinbase.Spot.public_client; kw...)
-    return product(client, ProductQuery(; kw...))
+    return product(client, ProductParams(; kw...))
 end
 
 end
