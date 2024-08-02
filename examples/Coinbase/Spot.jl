@@ -14,7 +14,7 @@ Coinbase.Spot.candle(;
 
 Coinbase.Spot.currency()
 
-Coinbase.Spot.product(; q_type = "BTC-USD")
+Coinbase.Spot.product(; type = "BTC-USD")
 
 Coinbase.Spot.product_stats(; product_id = "BTC-USD")
 

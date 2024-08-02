@@ -10,8 +10,12 @@ using Dates, NanoDates, TimeZones
 using CryptoExchangeAPIs.Coinbase
 using CryptoExchangeAPIs: Maybe, APIsRequest
 
-Base.@kwdef struct ProductStatsParams <: CoinbasePublicQuery
-    product_id::String
+Base.@kwdef mutable struct ProductStatsParams <: CoinbaseAPIsParams
+    product_id::Maybe{String} = nothing
+end
+
+Base.@kwdef mutable struct ProductStatsQuery <: CoinbasePublicQuery
+    #__ empty
 end
 
 struct ProductStatsData <: CoinbaseData
@@ -64,12 +68,13 @@ to_pretty_json(result.result)
 ```
 """
 
-function product_stats(client::CoinbaseClient, params::ProductStatsParams)
-    return APIsRequest{ProductStatsData}("GET", "products/$(params.product_id)/stats", params)(client)
+function product_stats(client::CoinbaseClient, params::ProductStatsParams, query::ProductStatsQuery)
+    return APIsRequest{ProductStatsData}("GET", "products/$(params.product_id)/stats", params, query)(client)
 end
 
 function product_stats(client::CoinbaseClient = Coinbase.Spot.public_client; product_id::String, kw...)
-    return product_stats(client, ProductStatsParams(; product_id = product_id); )
+    params, query = pq_split(ProductStatsParams, ProductStatsQuery; product_id = product_id, kw...)
+    return product_stats(client, params, query)
 end
 
 end

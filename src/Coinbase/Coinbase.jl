@@ -4,6 +4,7 @@ export CoinbaseCommonQuery,
     CoinbasePublicQuery,
     CoinbaseAccessQuery,
     CoinbasePrivateQuery,
+    CoinbaseAPIsParams,
     CoinbaseAPIError,
     CoinbaseClient,
     CoinbaseData
@@ -12,9 +13,10 @@ using Serde
 using Dates, NanoDates, TimeZones, Base64, Nettle
 
 using ..CryptoExchangeAPIs
-import ..CryptoExchangeAPIs: Maybe, AbstractAPIsError, AbstractAPIsData, AbstractAPIsQuery, AbstractAPIsClient
+import ..CryptoExchangeAPIs: Maybe, AbstractAPIsError, AbstractAPIsData, AbstractAPIsQuery, AbstractAPIsClient, AbstractAPIsParams
 
 abstract type CoinbaseData <: AbstractAPIsData end
+abstract type CoinbaseAPIsParams  <: AbstractAPIsParams end
 abstract type CoinbaseCommonQuery  <: AbstractAPIsQuery end
 abstract type CoinbasePublicQuery  <: CoinbaseCommonQuery end
 abstract type CoinbaseAccessQuery  <: CoinbaseCommonQuery end
@@ -85,10 +87,6 @@ end
 
 function CryptoExchangeAPIs.request_body(::Q)::String where {Q<:CoinbaseCommonQuery}
     return ""
-end
-
-function Serde.SerQuery.ser_ignore_field(::Type{<:CoinbaseCommonQuery}, ::Val{x}) where {x}
-    return startswith(string(x), "q_")
 end
 
 function CryptoExchangeAPIs.request_query(query::Q)::String where {Q<:CoinbaseCommonQuery}

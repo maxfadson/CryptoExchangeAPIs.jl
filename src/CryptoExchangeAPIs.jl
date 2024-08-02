@@ -5,6 +5,7 @@ export cex_query, cex_client, cex_result
 using EasyCurl, Serde
 using Dates, NanoDates, TimeZones
 
+abstract type AbstractAPIsParams end
 abstract type AbstractAPIsQuery end
 abstract type AbstractAPIsClient end
 abstract type AbstractAPIsData end
@@ -26,15 +27,17 @@ function retry_maxcount end
 struct APIsRequest{T}
     method::AbstractString
     endpoint::AbstractString
+    params::P where {P<:AbstractAPIsParams}
     query::Q where {Q<:AbstractAPIsQuery}
     num_calls::Ref{Int64}
 
     function APIsRequest{T}(
         method::AbstractString,
         endpoint::AbstractString,
+        params::P where {P<:AbstractAPIsParams},
         query::Q where {Q<:AbstractAPIsQuery},
     ) where {T}
-        return new{T}(method, endpoint, query, Ref{Int64}(0))
+        return new{T}(method, endpoint, params, query, Ref{Int64}(0))
     end
 end
 
