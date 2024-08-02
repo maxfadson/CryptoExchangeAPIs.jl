@@ -1,4 +1,5 @@
 # Coinbase/Utils
+export pq_split
 
 function Serde.deser(::Type{<:CoinbaseData}, ::Type{<:NanoDate}, x::AbstractString)::NanoDate
     return NanoDate(endswith(x, "Z") ? chop(x) : x)
@@ -22,4 +23,19 @@ end
 
 function Serde.SerQuery.ser_type(::Type{<:CoinbaseCommonQuery}, x::D)::String where {D<:DateTime}
     return Dates.format(x, "yyyy-mm-ddTHH:MM:SS")
+end
+
+function pq_split(::Type{P}, ::Type{Q}; kw...) where {P, Q}
+    p = P()
+    q = Q()
+
+    for (name, value) in kw
+        if hasproperty(p, name)
+            setfield!(p, name, value)
+        elseif hasproperty(q, name)
+            setfield!(q, name, value)
+        end
+    end
+    
+    return p, q
 end

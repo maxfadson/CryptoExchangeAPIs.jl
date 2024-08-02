@@ -1,6 +1,6 @@
 module ProductStats
 
-export ProductStatsQuery,
+export ProductStatsParams,
     ProductStatsData,
     product_stats
 
@@ -10,7 +10,11 @@ using Dates, NanoDates, TimeZones
 using CryptoExchangeAPIs.Coinbase
 using CryptoExchangeAPIs: Maybe, APIsRequest
 
-Base.@kwdef struct ProductStatsQuery <: CoinbasePublicQuery
+Base.@kwdef mutable struct ProductStatsParams <: CoinbaseAPIsParams
+    product_id::Maybe{String} = nothing
+end
+
+Base.@kwdef mutable struct ProductStatsQuery <: CoinbasePublicQuery
     #__ empty
 end
 
@@ -63,12 +67,14 @@ to_pretty_json(result.result)
 }
 ```
 """
-function product_stats(client::CoinbaseClient, query::ProductStatsQuery; product_id::String)
-    return APIsRequest{ProductStatsData}("GET", "products/$product_id/stats", query)(client)
+
+function product_stats(client::CoinbaseClient, params::ProductStatsParams, query::ProductStatsQuery)
+    return APIsRequest{ProductStatsData}("GET", "products/$(params.product_id)/stats", params, query)(client)
 end
 
 function product_stats(client::CoinbaseClient = Coinbase.Spot.public_client; product_id::String, kw...)
-    return product_stats(client, ProductStatsQuery(; kw...); product_id = product_id)
+    params, query = pq_split(ProductStatsParams, ProductStatsQuery; product_id = product_id, kw...)
+    return product_stats(client, params, query)
 end
 
 end
